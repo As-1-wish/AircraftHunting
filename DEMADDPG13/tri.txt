@@ -1,0 +1,29 @@
+import numpy as np
+def Triangle(PointA,PointB,PointC,P):  # 找出P点是否位于以PointA，PointB，PointC三个点集的三角形中
+    if P.shape!=PointA.shape:   # 判断PointA中是否只有一个顶点，这种情况比较特殊，因为python矩阵只有一维那么即可以看成行向量也可以看成列向量
+        Row = PointA.shape[0]
+        PExtend = (np.tile(P,Row)).reshape(Row,2)
+    else:
+        PExtend = P.reshape(1,2)
+        PointA = PointA.reshape(1,2)
+        PointB = PointB.reshape(1,2)
+        PointC = PointC.reshape(1,2)
+    PA = PointA - PExtend
+    PB = PointB - PExtend
+    PC = PointC - PExtend
+    T1 = np.cross(PA,PB)
+    T2 = np.cross(PB,PC)
+    T3 = np.cross(PC,PA)
+    flage1 = np.where(T1*T2>=0,1,0)
+    flage2 = np.where(T1*T3>=0,1,0)
+    Temp = flage1*flage2  # 判断是否同向，如果Temp中存在True那么P点在三角形中
+    Result = Temp[np.where(Temp==1)]
+    return Result
+
+a = np.array([0,0])
+b = np.array([1,1])
+c = np.array([2,0])
+p1 = np.array([1,0.5])
+p2 = np.array([1,5])
+print(Triangle(a,b,c,p1).size) # p1在三角形内部
+print(Triangle(a,b,c,p2).size) # p2不在三角形内部
