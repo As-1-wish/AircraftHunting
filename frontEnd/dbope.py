@@ -28,7 +28,6 @@ def checkUser(username, password):
     except ObjectDoesNotExist:
         return -1     # 用户不存在
     else:
-        print(user.password, Encrypt(password + user.pwdsuffix))
         if user.password != Encrypt(password + user.pwdsuffix):
             return 0  # 密码不正确
         else:

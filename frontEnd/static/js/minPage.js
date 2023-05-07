@@ -1,4 +1,5 @@
-let friendly_coor, enemy_coor;
+let friendly_coor = [], enemy_coor = [];
+let preCoors = []; // 记录当前已生成的坐标，防止生成坐标时重叠
 
 // 获取显示框
 let showPanel = document.querySelector('#showPanel');
@@ -17,45 +18,46 @@ function addAircrafts() {
     let regex_rule = /^\+?[1-9][0-9]*$/;
 
     if (regex_rule.test(friendly_aircraft_num) && regex_rule.test(enemy_aircraft_num)) {
-        let new_coordinate_x;
-        let new_coordinate_y;
+        let new_coordinate = [];
         let friendly_info_table = document.querySelector('#friendly-table');
         let enemy_info_table = document.querySelector('#enemy-table')
         // 每次生成则清空表
         friendly_info_table.innerHTML = "<tr><th>序号</th><th>当前位置</th><th>当前速度</th></tr>";
         enemy_info_table.innerHTML = "<tr><th>序号</th><th>当前位置</th><th>当前速度</th></tr>";
         clearAircrafts();   // 清空界面
-        let frilist = [[100., 100.], [350., 600.], [600., 100.]];
         // 生成友方飞行器
         for (let i = 0; i < friendly_aircraft_num; ++i) {
-            let per = tran_coordinate(frilist[i], 1);
-            // 生成随机坐标
-            new_coordinate_x = getRandomNumber(0, showPanel_height);
-            new_coordinate_y = getRandomNumber(0, showPanel_width);
-            // // 添加至配置栏表格中
-            // updateInfoTable(new_coordinate_x, new_coordinate_y, init_speed, friendly_info_table);
-            // // 在页面中初始化图形
-            // create_aircraft_css("friendly", i, new_coordinate_x, new_coordinate_y);
+            do {
+                // 生成随机坐标
+                let new_coordinate_x = getRandomNumber(minCoordinate, maxCoordinate).toFixed(3);
+                let new_coordinate_y = getRandomNumber(minCoordinate, maxCoordinate).toFixed(3);
+                new_coordinate = tran_coordinate([new_coordinate_x, new_coordinate_y], 1);
+            } while (!checkOcclusion(new_coordinate))
+            preCoors.push(new_coordinate);
+            friendly_coor.push(new_coordinate);
             // 添加至配置栏表格中
-            updateInfoTable(per[0], per[1], init_speed, friendly_info_table);
+            updateInfoTable(new_coordinate[0], new_coordinate[1], init_speed, friendly_info_table);
             // 在页面中初始化图形
-            create_aircraft_css("friendly", i, per[0], per[1]);
+            create_aircraft_css("friendly", i, new_coordinate[0], new_coordinate[1]);
         }
-        let enlist = [[350., 400.]];
         // 生成敌方飞行器
         for (let i = 0; i < enemy_aircraft_num; ++i) {
-            let per = tran_coordinate(enlist[i], 1);
-            new_coordinate_x = getRandomNumber(0, showPanel_height);
-            new_coordinate_y = getRandomNumber(0, showPanel_width);
-            // // 添加至配置栏表格中
-            // updateInfoTable(new_coordinate_x, new_coordinate_y, init_speed, enemy_info_table);
-            // // 在页面中初始化图形
-            // create_aircraft_css("enemy", i, new_coordinate_x, new_coordinate_y);
+            do {
+                // 生成随机坐标
+                let new_coordinate_x = getRandomNumber(minCoordinate, maxCoordinate).toFixed(3);
+                let new_coordinate_y = getRandomNumber(minCoordinate, maxCoordinate).toFixed(3);
+                new_coordinate = tran_coordinate([new_coordinate_x, new_coordinate_y], 1);
+                console.log("1-" + new_coordinate_x);
+                console.log("2-" + new_coordinate[0]);
+            } while (!checkOcclusion(new_coordinate))
+            preCoors.push(new_coordinate);
+            enemy_coor.push(new_coordinate);
             // 添加至配置栏表格中
-            updateInfoTable(per[0], per[1], init_speed, enemy_info_table);
+            updateInfoTable(new_coordinate[0], new_coordinate[1], init_speed, enemy_info_table);
             // 在页面中初始化图形
-            create_aircraft_css("enemy", i, per[0], per[1]);
+            create_aircraft_css("enemy", i, new_coordinate[0], new_coordinate[1]);
         }
+        console.log(preCoors);
     } else {
         alert("输入为空或数据不合法！");
     }
@@ -80,7 +82,7 @@ function updateInfoTable(coordinateX, coordinateY, speed, target_table) {
  * @description 生成范围内的随机数（三位小数）
  */
 function getRandomNumber(minNumber, maxNumber) {
-    return Math.random() * (maxNumber - minNumber);
+    return minNumber + Math.random() * (maxNumber - minNumber);
 }
 
 /**
@@ -97,8 +99,8 @@ function create_aircraft_css(type, index, coordinateX, coordinateY) {
         (type === "friendly" ? friendly_plane_prefix : enemy_plane_prefix) + index
         + " {\n" +
         "  position: absolute;\n" +
-        "  width: 50px; \n" +
-        "  height: 50px; \n" +
+        "  width: " + aircraft_size + "px; \n" +
+        "  height: " + aircraft_size + "px; \n" +
         "  top: 0;\n" +
         "  left: 0;\n" +
         "  background-image: url(\"../static/image/" + type + "-aircraft.png\"); /* 飞机图片地址 */\n" +
@@ -114,8 +116,8 @@ function create_aircraft_css(type, index, coordinateX, coordinateY) {
     new_container_style.innerHTML = "." +
         (type === "friendly" ? friendly_container_prefix : enemy_container_prefix) + index + " {\n" +
         "  position: absolute;\n" +
-        "  width: 50px; /* 距离顶部的距离 */\n" +
-        "  height: 50px; /* 距离顶部的距离 */\n" +
+        "  width: " + aircraft_size + "px; \n" +
+        "  height: " + aircraft_size + "px; \n" +
         "  top: " + coordinateX + "px; /* 距离顶部的距离 */\n" +
         "  left: " + coordinateY + "px; /* 距离左侧的距离 */\n" +
         "}"
@@ -144,17 +146,28 @@ function clearAircrafts() {
  * @description 演示开始函数，接受坐标数据，并进行渲染
  */
 function demostrating() {
+    let enemyPush = enemy_coor;
+    console.log(enemyPush);
+    for (let i = 0; i < enemyPush.length; ++i)
+        enemyPush[i] = tran_coordinate(enemyPush[i], 2);
+    let friendPush = friendly_coor;
+    for (let i = 0; i < friendPush.length; ++i)
+        friendPush[i] = tran_coordinate(friendPush[i], 2);
     $.ajax({
-        url: '/getCoorList/',
-        type: 'GET',
+        url: '../pursuit/evaluate/',
+        type: 'POST',
         dataType: 'json',
+        data: {
+            'enemy': JSON.stringify(enemyPush),
+            'friend': JSON.stringify(friendPush)
+        },
         success: function (data) {
             // 从返回的数据中获取坐标列表
-            friendly_coor = data.friendly_list;
-            enemy_coor = data.enemy_list;
-
-            move();
-
+            friendly_coor = data.friend;
+            enemy_coor = data.enemy;
+            let tag  = data.tag;
+            console.log(friendly_coor);
+            // move();
         },
         error: function (xhr, status, error) {
             console.error('AJAX Error:', status, error);
@@ -163,6 +176,7 @@ function demostrating() {
 
 }
 
+
 /**
  * @description 负责训练模型坐标与显示区域坐标间的转化
  * @param coordinates
@@ -170,12 +184,12 @@ function demostrating() {
  */
 function tran_coordinate(coordinates, tag) {
     if (tag === 1) {
-        coordinates[0] = coordinates[0] * rank_height;
-        coordinates[1] = coordinates[1] * rank_width;
+        coordinates[0] = coordinates[0] * rank_x;
+        coordinates[1] = coordinates[1] * rank_y;
     }
     if (tag === 2) {
-        coordinates[0] = coordinates[0] / rank_height;
-        coordinates[1] = coordinates[1] / rank_width;
+        coordinates[0] = coordinates[0] / rank_x;
+        coordinates[1] = coordinates[1] / rank_y;
     }
     return coordinates;
 }
@@ -189,13 +203,24 @@ function move() {
         for (let j = 0; j < friendly_coor[ind].length; ++j) {
 
             let con = document.querySelector("." + friendly_container_prefix + j);
-            con.style.left = friendly_coor[ind][j][1]+ 'px';
-            con.style.top = friendly_coor[ind][j][0]+ 'px';
+            con.style.left = friendly_coor[ind][j][1] + 'px';
+            con.style.top = friendly_coor[ind][j][0] + 'px';
         }
         let con = document.querySelector("." + enemy_container_prefix + 0);
         con.style.left = enemy_coor[ind][1] + 'px';
-        con.style.top = enemy_coor[ind][0]+ 'px';
+        con.style.top = enemy_coor[ind][0] + 'px';
 
         ind = (ind + 1) % friendly_coor.length;
     }, 200);
+}
+
+/**
+ * @description 判断生成坐标是否遮挡
+ */
+function checkOcclusion(coor) {
+    for (let item in preCoors) {
+        if (Math.abs(coor[0] - item[0]) < aircraft_size || Math.abs(coor[1] - item[1]) < aircraft_size)
+            return false;
+    }
+    return true;
 }

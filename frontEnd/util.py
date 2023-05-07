@@ -13,6 +13,4 @@ def Encrypt(password):
 def getRandomStr():
     return Faker().pystr()[0:6]
 
-print(Encrypt('1111111'))
-
 

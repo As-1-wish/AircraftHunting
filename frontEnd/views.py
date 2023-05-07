@@ -1,6 +1,5 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
-from pursuit2 import eval
 from frontEnd import dbope
 
 
@@ -13,18 +12,6 @@ def getLoginPage(request):
 
 def getMainPage(request):
     return render(request, "main.html")
-
-
-def getCoorList(resquest):
-    if resquest.is_ajax():
-        xy = [[482, 469]]
-        xyuav = [[545, 569],
-                 [477, 572],
-                 [454, 538]]
-        res = eval.evaluate(xy, xyuav)
-        print(res)
-        # return JsonResponse({'friendly_list': coordinates.friendly_coordinate_list,
-        #                      'enemy_list': coordinates.enemy_coordinate_list})
 
 
 # 新增用户
@@ -41,7 +28,6 @@ def login(request):
     if request.is_ajax():
         username = request.GET.get('username')
         password = request.GET.get('password')
-        print(username, password)
         tag = dbope.checkUser(username, password)
         if tag == 1:
             return JsonResponse({'code': 0, 'msg': '登录成功！'})
