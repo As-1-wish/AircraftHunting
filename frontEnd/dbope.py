@@ -22,6 +22,7 @@ def getUserByName(username):
         return True
 
 
+# 检查用户是否合法
 def checkUser(username, password):
     try:
         user = User.objects.get(username=username)
@@ -32,3 +33,19 @@ def checkUser(username, password):
             return 0  # 密码不正确
         else:
             return 1  # 可以登录
+
+
+# 存储演示记录,并返回此条记录的id
+def insertRecord(recordName, recordTime, result):
+    record = Recording(demoName=recordName, demoTime=recordTime, demoResult=result)
+    record.save()
+    return record.id
+
+
+# 存储轨迹点
+def insertTrackPoint(recordId, airType, tracks):
+    cnt = 1
+    for item in tracks:
+        track = Track(aircraftType=airType, recordId=recordId, coorX=item[0], coorY=item[1], speed=item[2], rank=cnt)
+        cnt += 1
+        track.save()

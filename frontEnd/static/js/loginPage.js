@@ -11,6 +11,7 @@ function login() {
     $.ajax({
         url: '/login/',
         dataType: 'json',
+        type: 'POST',
         data: {
             'username': username,
             'password': password

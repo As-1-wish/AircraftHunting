@@ -92,7 +92,6 @@
                                 <div class="col-auto">
                                     <input type="text" class="form-control col-8" id="friendly-aircraft">
                                 </div>
-
                             </div>
                             <div class="mb-3 row">
                                 <label for="enemy-aircraft" class="col-auto col-form-label">敌方飞机数量</label>
@@ -108,7 +107,94 @@
                 </div>
             </div>
         </div>
-        <div style="position: relative;width: 75%" id="showPanel">
+        <div style="position: relative;width: 50%" id="showPanel">
+            <!-- 第一个模态框 -->
+            <div class="modal fade" id="result-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="myModalLabel1">Modal 1</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Click the button to open Modal 2.</p>
+                            <button type="button" class="btn btn-primary" id="saveBtn" data-bs-dismiss="modal"
+                                    data-bs-target="#save-modal">Open Modal 2
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第二个模态框 -->
+            <div class="modal fade" id="save-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="myModalLabel2">Modal 2</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Click the button to close Modal 2.</p>
+                            <label for="record-name" class="col-auto col-form-label">我方飞机数量</label>
+                            <div class="col-auto">
+                                <input type="text" class="form-control col-8" id="record-name">
+                            </div>
+                            <button type="button" class="btn btn-danger" id="closeBtn" data-dismiss="modal">
+                                Close Modal 2
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding-top: 1.5%; width: 25%;border-left: 2px outset black">
+            <button type="button" class="btn btn-secondary no-click-effect" style="width: 100%">
+                演示&nbsp;示&nbsp;记&nbsp;录&nbsp;表
+            </button>
+            <table style="table-layout: fixed;border-collapse: collapse">
+                <thead>
+                <tr>
+                    <th class="demo-th">序号</th>
+                    <th class="demo-th">名称</th>
+                    <th class="demo-th">时间</th>
+                    <th class="demo-th">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="demo-td">1</td>
+                    <td class="demo-td">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</td>
+                    <td class="demo-td">2022-05-08 12:34:56</td>
+                    <td class="demo-td">
+                        <button>操作</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="demo-td">2</td>
+                    <td class="demo-td">Praesent tempus lacus quis aliquet lacinia.</td>
+                    <td class="demo-td">2022-05-09 01:23:45</td>
+                    <td class="demo-td">
+                        <button>操作</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="demo-td">3</td>
+                    <td class="demo-td">Nullam convallis ligula eget nulla aliquet, vel malesuada nulla hendrerit.</td>
+                    <td class="demo-td">2022-05-10 23:45:01</td>
+                    <td class="demo-td">
+                        <button>操作</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
         </div>
     </div>
 </div>

@@ -6,41 +6,44 @@
 .row {
     margin: 0;
 }
+
 /*标题栏的样式设置*/
 .navbar-brand {
     height: 50px; /* 设置标题栏高度 */
     padding: 10px; /* 设置标题栏内边距 */
     font-size: 30px; /* 设置标题栏字体大小 */
 }
+
 /*设置模态框显示时页面没有滚动条*/
-body.modal-open{
+body.modal-open {
     overflow: hidden;
 }
 
 /* 飞机容器样式，用于控制飞机位置和旋转 */
 .plane-container {
-  position: relative;
-  margin-top: 100px; /* 距离顶部的距离 */
-  margin-left: 100px; /* 距离左侧的距离 */
+    position: relative;
+    margin-top: 100px; /* 距离顶部的距离 */
+    margin-left: 100px; /* 距离左侧的距离 */
 }
 
 /* 飞机样式 */
 .plane {
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-image: url("../image/enemy-aircraft.png"); /* 飞机图片地址 */
-  background-size: contain;
-  transform-origin: 50% 50%;
-  animation: fly 5s linear infinite; /* 控制飞机速度，10s为飞行时间 */
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-image: url("../image/enemy-aircraft.png"); /* 飞机图片地址 */
+    background-size: contain;
+    transform-origin: 50% 50%;
+    animation: fly 5s linear infinite; /* 控制飞机速度，10s为飞行时间 */
 }
 
 /* 飞机旋转动画 */
 @keyframes fly {
-  0% {
-    transform: translateX(0) translateY(0) rotate(0);
-  }
-  100% {
-    transform: translateX(800px) translateY(500px) rotate(0);
-  }
+    0% {
+        transform: translateX(0) translateY(0) rotate(0);
+    }
+    100% {
+        transform: translateX(800px) translateY(500px) rotate(0);
+    }
 }
+
