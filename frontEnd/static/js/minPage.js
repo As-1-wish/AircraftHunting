@@ -7,8 +7,6 @@ let showPanel = document.querySelector('#showPanel');
 let modalElement = document.querySelector('#initModal');
 let friendly_info_table = document.querySelector('#friendly-table');
 let enemy_info_table = document.querySelector('#enemy-table')
-let modalRes = document.querySelector('#result-modal');
-let modalSav = document.querySelector('#save-modal');
 // 添加监听事件
 modalElement.querySelector('#createAirs').addEventListener("click", addAircrafts_random);
 document.querySelector('#startBtn').addEventListener("click", demostrating);
@@ -30,14 +28,17 @@ function addAircrafts_random() {
         clearAircrafts();   // 清空界面
         // 生成友方飞行器
         $.ajax({
-            url: '../init/', dataType: 'json', type: 'POST', data: {
-                'enemyNum': enemy_aircraft_num, 'friendNum': friendly_aircraft_num
-            }, success: function (res) {
+            url: '../init/',
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                'enemyNum': enemy_aircraft_num,
+                'friendNum': friendly_aircraft_num
+            },
+            success: function (res) {
                 if (res.code === 0) {
                     enemy_coor = res.enemy;
                     friendly_coor = res.friend;
-                    console.log(enemy_coor);
-                    console.log(friendly_coor);
                     let cnt = 0;
                     for (let item in enemy_coor) {
                         // 更新配置栏表格
@@ -53,7 +54,8 @@ function addAircrafts_random() {
                         create_aircraft_css('friend', cnt++, tran_coordinate(friendly_coor[item], 1));
                     }
                 }
-            }, error: function (xhr, status, error) {
+            },
+            error: function (xhr, status, error) {
                 console.error('AJAX Error:', status, error);
             }
         })
@@ -72,8 +74,8 @@ showPanel.addEventListener('contextmenu', function (event) {
     $('#diyModal').modal("show");
     let label_x = showPanel.querySelector('#coorX');
     let label_y = showPanel.querySelector('#coorY');
-    label_x.textContent = mouseX.toFixed(0).toString();
-    label_y.textContent = mouseY.toFixed(0).toString();
+    label_x.text = mouseX.toFixed(0).toString();
+    label_y.text = mouseY.toFixed(0).toString();
 });
 
 // 绑定生成函数
@@ -84,8 +86,8 @@ showPanel.querySelector('#createBtn').addEventListener('click', addAircrafts_DIY
  */
 function addAircrafts_DIY() {
     let type = showPanel.querySelector('#typeSelect').value;
-    let coor = [parseInt(showPanel.querySelector('#coorX').textContent),
-        parseInt(showPanel.querySelector('#coorY').textContent)];
+    let coor = [parseInt(showPanel.querySelector('#coorX').text),
+        parseInt(showPanel.querySelector('#coorY').text)];
     if (type === "enemy") {
         enemy_coor.push(coor);
         create_aircraft_css(type, enemy_coor.length - 1, coor);
@@ -169,19 +171,13 @@ function clearAircrafts() {
  * @description 演示开始函数，接受坐标数据，并进行渲染
  */
 function demostrating() {
-    let enemyPush = enemy_coor;
-    for (let i = 0; i < enemyPush.length; ++i)
-        enemyPush[i] = tran_coordinate(enemyPush[i], 2);
-    let friendPush = friendly_coor;
-    for (let i = 0; i < friendPush.length; ++i)
-        friendPush[i] = tran_coordinate(friendPush[i], 2);
     $.ajax({
         url: '../pursuit/evaluate/',
         type: 'POST',
         dataType: 'json',
         data: {
-            'enemy': JSON.stringify(enemyPush),
-            'friend': JSON.stringify(friendPush)
+            'enemy': JSON.stringify(enemy_coor),
+            'friend': JSON.stringify(friendly_coor)
         },
         success: function (data) {
             // 从返回的数据中获取坐标列表
@@ -234,10 +230,30 @@ function move(tag) {
             con.style.top = pre[1] + 'px';
         }
 
-        ind = (ind + 1) % friendly_coor.length;
-        if (ind + 1 === friendly_coor.length) {
+        ind = ind + 1;
+        if (ind === friendly_coor.length) {
             clearInterval(moveTimer);
-            confirm(msg[tag])
+            let res = confirm(msg[tag] + "！ 是否要保存此次演示？");
+            if (res) {
+                console.log(friendly_coor)
+                $.ajax({
+                    url: '../insertDemo/',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        'result': tag,
+                        'enemy': JSON.stringify(enemy_coor),
+                        'friend': JSON.stringify(friendly_coor),
+                        'speed': init_speed
+                    },
+                    success: function (res) {
+                        alert(res.msg)
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', status, error);
+                    }
+                })
+            }
         }
     }, 200);
 }

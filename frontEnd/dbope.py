@@ -27,7 +27,7 @@ def checkUser(username, password):
     try:
         user = User.objects.get(username=username)
     except ObjectDoesNotExist:
-        return -1     # 用户不存在
+        return -1  # 用户不存在
     else:
         if user.password != Encrypt(password + user.pwdsuffix):
             return 0  # 密码不正确
@@ -36,16 +36,22 @@ def checkUser(username, password):
 
 
 # 存储演示记录,并返回此条记录的id
-def insertRecord(recordName, recordTime, result):
-    record = Recording(demoName=recordName, demoTime=recordTime, demoResult=result)
+def insertRecord(recordTime, result):
+    record = Recording(demoTime=recordTime, demoResult=result)
     record.save()
     return record.id
 
 
 # 存储轨迹点
-def insertTrackPoint(recordId, airType, tracks):
-    cnt = 1
-    for item in tracks:
-        track = Track(aircraftType=airType, recordId=recordId, coorX=item[0], coorY=item[1], speed=item[2], rank=cnt)
-        cnt += 1
-        track.save()
+def insertTrackPoint(record, airType, tracks, speed):
+    tra = []
+    for i in range(len(tracks)):
+        for j in range(len(tracks[i])):
+            tra.append(Track(aircraftType=airType, aircraftID=j, recordId=record, coorX=tracks[i][j][0],
+                             coorY=tracks[i][j][1], speed=speed, rank=i))
+    print(tra)
+    Track.objects.bulk_create(tra)
+
+
+def recording(recordId):
+    return Recording.objects.get(id=recordId)

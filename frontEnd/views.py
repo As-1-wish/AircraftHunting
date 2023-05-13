@@ -1,8 +1,11 @@
+import json
 import random
+from datetime import datetime
 
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from pymysql import IntegrityError
 
 from frontEnd import dbope
 from frontEnd.constant import *
@@ -79,6 +82,26 @@ def initCoordinate(request):
 # 判断坐标是否遮挡
 def checkOcclusion(airs, pre):
     for i in airs:
-        if abs(i[0] - pre[0]) < aircraft_size or abs(i[1] - pre[1]) < aircraft_size:
+        if abs(i[0] - pre[0]) < aircraft_size / rank_x or abs(i[1] - pre[1]) < aircraft_size / rank_y:
             return False
     return True
+
+
+# 插入本次演示记录
+@csrf_exempt
+def insertDemo(request):
+    if request.is_ajax() and request.method == 'POST':
+        result = request.POST.get('result')
+        enemy = json.loads(request.POST.get('enemy'))
+        friend = json.loads(request.POST.get('friend'))
+        speed = request.POST.get('speed')
+        preTime = datetime.now()
+        try:
+            demo_id = dbope.insertRecord(preTime, result)
+            demo = dbope.recording(demo_id)
+
+            dbope.insertTrackPoint(demo, 1, friend, speed)
+            dbope.insertTrackPoint(demo, 2, enemy, speed)
+            return JsonResponse({'code': 0, 'msg': "插入成功"})
+        except IntegrityError as e:
+            return JsonResponse({'code': 1, 'msg': str(e)})
