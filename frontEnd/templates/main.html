@@ -101,11 +101,13 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" id="createAirs">生&nbsp;成</button>
+                            <button type="button" class="btn btn-primary" id="createAirs">随&nbsp;机&nbsp;生&nbsp;成
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
         <div style="position: relative;width: 50%" id="showPanel">
             <!-- 第一个模态框 -->
@@ -149,6 +151,43 @@
                             <button type="button" class="btn btn-danger" id="closeBtn" data-dismiss="modal">
                                 Close Modal 2
                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--自定义弹出框-->
+            <div class="modal fade" id="diyModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">自&nbsp;定&nbsp;义&nbsp;生&nbsp;成</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="typeSelect" class="form-label">无人机类型：</label>
+                                <select class="form-select" id="typeSelect">
+                                    <option value="friend">友方飞机</option>
+                                    <option value="enemy">敌方飞机</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label>当前坐标:</label><br>
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="coorX">X:</label>
+                                        <label id="coorX" class="form-label"></label>
+                                    </div>
+                                    <div class="col">
+                                        <label for="coorY">Y:</label>
+                                        <label id="coorY" class="form-label"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="createBtn" type="button" class="btn btn-primary">生&nbsp;成</button>
                         </div>
                     </div>
                 </div>

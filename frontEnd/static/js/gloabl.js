@@ -7,9 +7,9 @@ const init_speed = 20;
 const rank_x = (showPanel_x / train_x);   // 转换比例
 const rank_y = (showPanel_y / train_y);
 
-const friendly_plane_prefix = "friendly-plane-";
+const friendly_plane_prefix = "friend-plane-";
 const enemy_plane_prefix = "enemy-plane-";
-const friendly_container_prefix = "friendly-container-";
+const friendly_container_prefix = "friend-container-";
 const enemy_container_prefix = "enemy-container-";
 
 const msg = {

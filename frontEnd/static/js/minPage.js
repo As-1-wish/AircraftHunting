@@ -5,14 +5,18 @@ let preCoors = []; // 记录当前已生成的坐标，防止生成坐标时重�
 let showPanel = document.querySelector('#showPanel');
 // 获取模态框
 let modalElement = document.querySelector('#initModal');
+let friendly_info_table = document.querySelector('#friendly-table');
+let enemy_info_table = document.querySelector('#enemy-table')
 let modalRes = document.querySelector('#result-modal');
 let modalSav = document.querySelector('#save-modal');
 // 添加监听事件
-modalElement.querySelector('#createAirs').addEventListener("click", addAircrafts);
+modalElement.querySelector('#createAirs').addEventListener("click", addAircrafts_random);
 document.querySelector('#startBtn').addEventListener("click", demostrating);
 
-// 添加飞行器函数,
-function addAircrafts() {
+/**
+ * @description 随机添加无人机函数
+ */
+function addAircrafts_random() {
     let friendly_aircraft_num = modalElement.querySelector('#friendly-aircraft').value;
     let enemy_aircraft_num = modalElement.querySelector('#enemy-aircraft').value;
 
@@ -20,8 +24,6 @@ function addAircrafts() {
     let regex_rule = /^\+?[1-9][0-9]*$/;
 
     if (regex_rule.test(friendly_aircraft_num) && regex_rule.test(enemy_aircraft_num)) {
-        let friendly_info_table = document.querySelector('#friendly-table');
-        let enemy_info_table = document.querySelector('#enemy-table')
         // 每次生成则清空表
         friendly_info_table.innerHTML = "<tr><th>序号</th><th>当前位置</th><th>当前速度</th></tr>";
         enemy_info_table.innerHTML = "<tr><th>序号</th><th>当前位置</th><th>当前速度</th></tr>";
@@ -48,7 +50,7 @@ function addAircrafts() {
                         // 更新配置栏表格
                         updateInfoTable(tran_coordinate(friendly_coor[item], 1), init_speed, friendly_info_table);
                         // 绘制图形
-                        create_aircraft_css('friendly', cnt++, tran_coordinate(friendly_coor[item], 1));
+                        create_aircraft_css('friend', cnt++, tran_coordinate(friendly_coor[item], 1));
                     }
                 }
             }, error: function (xhr, status, error) {
@@ -58,6 +60,42 @@ function addAircrafts() {
     } else {
         alert("输入为空或数据不合法！");
     }
+}
+
+/**
+ * @description 显示自定义增添无人机弹出框
+ */
+showPanel.addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+    let mouseX = event.clientX - showPanel.getBoundingClientRect().left;
+    let mouseY = event.clientY - showPanel.getBoundingClientRect().top;
+    $('#diyModal').modal("show");
+    let label_x = showPanel.querySelector('#coorX');
+    let label_y = showPanel.querySelector('#coorY');
+    label_x.textContent = mouseX.toFixed(0).toString();
+    label_y.textContent = mouseY.toFixed(0).toString();
+});
+
+// 绑定生成函数
+showPanel.querySelector('#createBtn').addEventListener('click', addAircrafts_DIY);
+
+/**
+ *  @description 自定义添加无人机
+ */
+function addAircrafts_DIY() {
+    let type = showPanel.querySelector('#typeSelect').value;
+    let coor = [parseInt(showPanel.querySelector('#coorX').textContent),
+        parseInt(showPanel.querySelector('#coorY').textContent)];
+    if (type === "enemy") {
+        enemy_coor.push(coor);
+        create_aircraft_css(type, enemy_coor.length - 1, coor);
+        updateInfoTable(coor, init_speed, enemy_info_table);
+    } else {
+        friendly_coor.push(coor);
+        create_aircraft_css(type, friendly_coor.length - 1, coor);
+        updateInfoTable(coor, init_speed, friendly_info_table);
+    }
+    $('#diyModal').modal("hide");
 }
 
 /**
@@ -74,7 +112,7 @@ function updateInfoTable(coordinate, speed, target_table) {
 }
 
 /**
- * @description 针对每个随机生成的坐标，生成各自的样式并在页面显示
+ * @description 针对每个生成的坐标，生成各自的样式并在页面显示
  * @param type
  * @param index
  * @param coordinate
@@ -82,7 +120,7 @@ function updateInfoTable(coordinate, speed, target_table) {
 function create_aircraft_css(type, index, coordinate) {
     // 设置plane的属性
     let new_style = document.createElement('style');
-    new_style.innerHTML = "." + (type === "friendly" ? friendly_plane_prefix : enemy_plane_prefix) +
+    new_style.innerHTML = "." + (type === "friend" ? friendly_plane_prefix : enemy_plane_prefix) +
         index + " {\n" +
         "  position: absolute;\n" +
         "  width: " + aircraft_size + "px; \n" +
@@ -96,7 +134,7 @@ function create_aircraft_css(type, index, coordinate) {
 
     // 设置 plane容器的属性
     let new_container_style = document.createElement('style');
-    new_container_style.innerHTML = "." + (type === "friendly" ?
+    new_container_style.innerHTML = "." + (type === "friend" ?
             friendly_container_prefix : enemy_container_prefix) + index + " {\n" +
         "  position: absolute;\n" +
         "  width: " + aircraft_size + "px; \n" +
@@ -108,8 +146,8 @@ function create_aircraft_css(type, index, coordinate) {
     let new_plane = document.createElement("div");
     let new_container = document.createElement('div');
 
-    new_plane.classList.add((type === "friendly" ? friendly_plane_prefix : enemy_plane_prefix) + index);
-    new_container.classList.add((type === "friendly" ? friendly_container_prefix : enemy_container_prefix) + index);
+    new_plane.classList.add((type === "friend" ? friendly_plane_prefix : enemy_plane_prefix) + index);
+    new_container.classList.add((type === "friend" ? friendly_container_prefix : enemy_container_prefix) + index);
     new_container.appendChild(new_plane);
 
     showPanel.appendChild(new_container);
@@ -186,21 +224,20 @@ function move(tag) {
         for (let j = 0; j < friendly_coor[ind].length; ++j) {
             let con = document.querySelector("." + friendly_container_prefix + j);
             let pre = tran_coordinate(friendly_coor[ind][j], 1);
-            con.style.left = pre[1] + 'px';
-            con.style.top = pre[0] + 'px';
+            con.style.left = pre[0] + 'px';
+            con.style.top = pre[1] + 'px';
         }
         for (let j = 0; j < enemy_coor[ind].length; ++j) {
             let con = document.querySelector("." + enemy_container_prefix + j);
             let pre = tran_coordinate(enemy_coor[ind][j], 1);
-            con.style.left = pre[1] + 'px';
-            con.style.top = pre[0] + 'px';
+            con.style.left = pre[0] + 'px';
+            con.style.top = pre[1] + 'px';
         }
 
         ind = (ind + 1) % friendly_coor.length;
         if (ind + 1 === friendly_coor.length) {
             clearInterval(moveTimer);
             confirm(msg[tag])
-            $('#result-modal').modal('show');
         }
     }, 200);
 }
