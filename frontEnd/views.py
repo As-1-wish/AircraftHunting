@@ -22,6 +22,10 @@ def getMainPage(request):
     return render(request, "main.html")
 
 
+def getRegister(request):
+    return render(request, "register.html")
+
+
 # 新增用户
 def register(request, username, password):
     if dbope.getUserByName(username):
@@ -95,13 +99,21 @@ def insertDemo(request):
         enemy = json.loads(request.POST.get('enemy'))
         friend = json.loads(request.POST.get('friend'))
         speed = request.POST.get('speed')
-        preTime = datetime.now()
+        preTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         try:
             demo_id = dbope.insertRecord(preTime, result)
-            demo = dbope.recording(demo_id)
+            demo = dbope.getDemoByID(demo_id)
 
             dbope.insertTrackPoint(demo, 1, friend, speed)
             dbope.insertTrackPoint(demo, 2, enemy, speed)
             return JsonResponse({'code': 0, 'msg': "插入成功"})
         except IntegrityError as e:
             return JsonResponse({'code': 1, 'msg': str(e)})
+
+
+# 获得演示记录列表
+def getAllDemos(request):
+    if request.is_ajax() and request.method == 'GET':
+        records = dbope.getAllDemos()
+        print(records[0][1])
+        return JsonResponse({'code': 0, 'records': dbope.getAllDemos()})

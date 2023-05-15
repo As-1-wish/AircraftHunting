@@ -49,9 +49,18 @@ def insertTrackPoint(record, airType, tracks, speed):
         for j in range(len(tracks[i])):
             tra.append(Track(aircraftType=airType, aircraftID=j, recordId=record, coorX=tracks[i][j][0],
                              coorY=tracks[i][j][1], speed=speed, rank=i))
-    print(tra)
     Track.objects.bulk_create(tra)
 
 
-def recording(recordId):
+# 获取对应ID演示记录
+def getDemoByID(recordId):
     return Recording.objects.get(id=recordId)
+
+
+# 获取所有演示记录
+def getAllDemos():
+    records = Recording.objects.all()
+    res = []
+    for record in records:
+        res.append((record.id, record.demoTime.strftime("%Y-%m-%d %H:%M:%S")))
+    return res

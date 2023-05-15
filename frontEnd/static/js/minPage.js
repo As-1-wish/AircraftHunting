@@ -7,6 +7,7 @@ let showPanel = document.querySelector('#showPanel');
 let modalElement = document.querySelector('#initModal');
 let friendly_info_table = document.querySelector('#friendly-table');
 let enemy_info_table = document.querySelector('#enemy-table')
+let record_info_table = document.querySelector('#recordTable')
 // 添加监听事件
 modalElement.querySelector('#createAirs').addEventListener("click", addAircrafts_random);
 document.querySelector('#startBtn').addEventListener("click", demostrating);
@@ -74,8 +75,8 @@ showPanel.addEventListener('contextmenu', function (event) {
     $('#diyModal').modal("show");
     let label_x = showPanel.querySelector('#coorX');
     let label_y = showPanel.querySelector('#coorY');
-    label_x.text = mouseX.toFixed(0).toString();
-    label_y.text = mouseY.toFixed(0).toString();
+    label_x.textContent = mouseX.toFixed(0).toString();
+    label_y.textContent = mouseY.toFixed(0).toString();
 });
 
 // 绑定生成函数
@@ -86,8 +87,8 @@ showPanel.querySelector('#createBtn').addEventListener('click', addAircrafts_DIY
  */
 function addAircrafts_DIY() {
     let type = showPanel.querySelector('#typeSelect').value;
-    let coor = [parseInt(showPanel.querySelector('#coorX').text),
-        parseInt(showPanel.querySelector('#coorY').text)];
+    let coor = [parseInt(showPanel.querySelector('#coorX').textContent),
+        parseInt(showPanel.querySelector('#coorY').textContent)];
     if (type === "enemy") {
         enemy_coor.push(coor);
         create_aircraft_css(type, enemy_coor.length - 1, coor);
@@ -247,7 +248,8 @@ function move(tag) {
                         'speed': init_speed
                     },
                     success: function (res) {
-                        alert(res.msg)
+                        alert(res.msg);
+                        location.reload();
                     },
                     error: function (xhr, status, error) {
                         console.error('AJAX Error:', status, error);
@@ -256,4 +258,40 @@ function move(tag) {
             }
         }
     }, 200);
+}
+
+
+/**
+ * @description 页面刷新函数（更新演示记录）
+ */
+function refresh_page() {
+    $.ajax({
+        url: "../getAllDemos/",
+        type: 'GET',
+        dataType: 'json',
+        success: function (res) {
+            if (res.code === 0) {
+                updataRecordTable(res.records);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('AJAX Error:', status, error);
+        }
+    })
+}
+
+/**
+ * @description 更新记录表
+ */
+function updataRecordTable(records) {
+    record_info_table.innerHTML = "<tr> <th>序号</th> <th>时间</th> <th>操作</th> </tr>";
+    for (let i in records) {
+        record_info_table.innerHTML += "<tr>" +
+            "<td>" + records[i][0] + "</td>" +
+            "<td style='min-width: 100px'>" + records[i][1] + "</td>" +
+            "<td><button class='btn-secondary'>" +
+            "   <i class='fa fa-refresh'></i>" +
+            "</button></td>" +
+            "</tr>";
+    }
 }
